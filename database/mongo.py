@@ -1,3 +1,4 @@
+import os
 from pymongo.mongo_client import MongoClient
 from pymongo import MongoClient
 
@@ -19,6 +20,8 @@ User:
 class Mongo:
     def __init__(self):
         # Initialize the MongoDB client
+        if not MONGODB_URI:
+            raise ValueError("MONGODB_URI not found in environment variables")
         self.client = MongoClient(MONGODB_URI)
         self.db = self.client["hh"]
         self.users_collection = self.db["users"]
