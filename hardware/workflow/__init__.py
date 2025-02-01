@@ -27,14 +27,17 @@ class Workflow:
 
         [intent, friend] = self.intent.get_intent(prompt)
         if DEBUGGING_FLAG:
-            print("2. intent: ", intent)
+            print("2. intent: ", intent, friend)
 
         [data, error] = self.permission.get_data(user_id, intent, friend)
         if DEBUGGING_FLAG:
-            print("3. data: ", data)
+            print("3. data: ", data, error)
 
         if error:
-            return {"error": error}
+            audio_url = self.tts.synthesize_speech(error)
+            if DEBUGGING_FLAG:
+                print("5. audio_url: ", audio_url)
+            return {"response": audio_url}
         
         system_message = "orange"
         response = self.llm.generate_response(prompt, intent, system_message)
@@ -48,4 +51,4 @@ class Workflow:
 
 
 test = Workflow()
-test.run("123", "What is the weather today?")
+test.run("123", "where is Charlie right now?")
