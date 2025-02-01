@@ -1,20 +1,26 @@
 import os
 from openai import OpenAI
 
-# import sys
-# sys.path.append("..")
-
 from dotenv import load_dotenv
+import json
 load_dotenv()
 
-from constants import intents
+intents = [
+    "general",
+    "current_location",
+    "distance",
+    "schedule"
+    "give_address_permission",
+    "give_schedule_permission",
+]
+
+intents_str = "general, current_location, distance, schedule, give_address_permission, give_schedule_permission"
 
 class ChatGPTInteraction:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("OPENAI_API_KEY not found in environment variables")
-        print("api_key: ", api_key) 
         self.client = OpenAI(api_key=api_key)
         self.conversation_history = []
 
@@ -28,7 +34,9 @@ class ChatGPTInteraction:
             messages = [
                 {
                     "role": "system",
-                    "content": "You are a straightforward assistant used to get intent out of user's transcribed input. You have the following options, " + intents.Intents.get_all_intents_as_string(),
+                    "content": "You are a straightforward assistant used to get intent out of user's transcribed input. You have the following options, " 
+                    + intents_str
+                    + '. Send a json back with this format {"intent": "your_intent", "name": "your_name"}. Add your name if its location or distance or schedule intent.',
                 }
             ]
             messages.extend(self.conversation_history)
@@ -42,7 +50,8 @@ class ChatGPTInteraction:
                 {"role": "assistant", "content": assistant_response}
             )
             self.clean()
-            return assistant_response
+            assistant_response = json.loads(assistant_response)
+            return [assistant_response["intent"], assistant_response.get("name", "")]
         except Exception as e:
             self.clean()
             print("ERROR in openai.py while parisng the intent", e)
@@ -79,8 +88,3 @@ class ChatGPTInteraction:
         except Exception as e:
             self.clean()
             print("ERROR in openai.py while generating LLM response:", e)
-
-
-
-openai = ChatGPTInteraction()
-print(openai.get_intent("What is the speed of Windows 10?"))
