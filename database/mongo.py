@@ -16,7 +16,7 @@ User:
   }]
 '''
 
-class MongoDBClient:
+class Mongo:
     def __init__(self):
         # Initialize the MongoDB client
         self.client = MongoClient(MONGODB_URI)

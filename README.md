@@ -1,1 +1,4 @@
 # Persona
+ENVs we need for this to work:
+MONGO_URI - for mongo db connection
+IS_TRANSMITTER - for the server to determine if it has a rfid transmitter
