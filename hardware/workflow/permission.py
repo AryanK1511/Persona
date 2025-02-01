@@ -21,6 +21,7 @@ class Permission:
 
         permission = self.get_permission(user_id, intent, friend)
         print("permission: ", permission)
+        
         if not permission:
             error_code = ""
             if intent == "current_location" or intent == "distance":
