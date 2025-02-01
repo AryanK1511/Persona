@@ -4,4 +4,4 @@ class Intent:
         pass
     
     def get_intent(self, prompt):
-        
+        pass
