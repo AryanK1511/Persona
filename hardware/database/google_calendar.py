@@ -9,7 +9,7 @@ from googleapiclient.errors import HttpError
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-def main():
+def get_calendar(days):
   creds = None
 
   if os.path.exists("token.json"):
@@ -19,7 +19,8 @@ def main():
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
     else:
-      flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+      creds_path = os.path.join(os.path.dirname(__file__), "credentials.json")
+      flow = InstalledAppFlow.from_client_secrets_file(creds_path, SCOPES)
       creds = flow.run_local_server(port=0)
     with open("token.json", "w") as token:
       token.write(creds.to_json())
@@ -31,16 +32,6 @@ def main():
     event_result = service.events().list(calendarId="primary", timeMin=now, maxResults=10, singleEvents=True, orderBy="startTime").execute()
     events = event_result.get("items", [])
 
-    if not events:
-      print("No events found!")
-
-
-    for event in events:
-      start = event["start"].get("dateTime", event["start"].get("date"))
-      print(f"{start} {event['summary']}")
+    return events
   except HttpError as error:
     print(f"An error occurred: {error}")
-  
-
-if __name__ == "__main__":
-  main()
