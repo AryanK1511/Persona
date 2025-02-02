@@ -2,7 +2,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppBar, Toolbar, Typography, Button, Container, CssBaseline } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Container, CssBaseline, Box } from "@mui/material";
 import Link from "next/link";
 import { SessionProvider } from "next-auth/react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -71,7 +71,7 @@ export default function RootLayout({
       <SessionProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100%', margin: 0 }}>
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
             {/* Navigation Bar */}
             <AppBar position="static" sx={{ backgroundColor: "#7C4DFF" }}>
               <Toolbar>
@@ -90,9 +90,13 @@ export default function RootLayout({
               </Toolbar>
             </AppBar>
             {/* Main Content */}
-            <Container sx={{ padding: "24px", backgroundColor: "background.default", minHeight: '100vh' }}>
-              {children}
-            </Container>
+            {children}
+            {/* Footer */}
+            <Box component="footer" sx={{ backgroundColor: "#7C4DFF", color: "white", padding: "10px", textAlign: "center" }}>
+              <Typography variant="body2">
+                © {new Date().getFullYear()} Persona. All rights reserved.
+              </Typography>
+            </Box>
           </body>
         </ThemeProvider>
       </SessionProvider>
