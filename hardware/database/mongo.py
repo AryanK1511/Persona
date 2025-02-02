@@ -37,7 +37,7 @@ class Mongo:
         return user
 
     # add friends
-    def updateFriends(self, user_id, friend_name, schedule, location):
+    def updateFriends(self, user_id, friend_name):
       """
       Updates the friends list of a user by adding a new friend or updating an existing friend's details.
       Args:
@@ -53,12 +53,12 @@ class Mongo:
       if friend is None:
           user["friends"].append({
             "name": friend_name,
-            "schedule": schedule,
-            "location": location
+            "schedule": False,
+            "location": False
           })
       else:
-          friend["schedule"] = schedule
-          friend["location"] = location
+          friend["schedule"] = False
+          friend["location"] = False
 
       # updates the database
       self.users_collection.update_one(
@@ -99,7 +99,6 @@ class Mongo:
             if friend_name.lower() in friend["name"].lower():
                 return friend["schedule"]
         return False
-    
   
     # add user
     def addUser(self, user_id, name):
@@ -128,3 +127,47 @@ class Mongo:
         self.users_collection.insert_one(user)
         self.users.append(user)
         return user
+    
+    # addLocationAccess
+    def addLocationAccess(self, user_id, friend_name):
+        """
+        Adds location access permission to a friend.
+        Args:
+          user_id (str): The ID of the user granting permission.
+          friend_name (str): The name of the friend to grant permission to.
+        """
+        user = self.getUser(user_id)
+
+        friend = next((friend for friend in user["friends"] if friend["name"].lower() == friend_name.lower()), None)
+        if friend is not None:
+            friend["location"] = True
+            self.users_collection.update_one(
+                {"_id": user_id},
+                {"$set": {"friends": user["friends"]}}
+            )
+            self.users = [u for u in self.users if u["_id"] != user_id]
+            return True
+        return False
+    
+    # addScheduleAccess
+    def addScheduleAccess(self, user_id, friend_name):
+        """
+        Adds schedule access permission to a friend.
+        Args:
+          user_id (str): The ID of the user granting permission.
+          friend_name (str): The name of the friend to grant permission to.
+        """
+        user = self.getUser(user_id)
+
+        friend = next((friend for friend in user["friends"] if friend["name"].lower() == friend_name.lower()), None)
+        if friend is not None:
+            friend["schedule"] = True
+            self.users_collection.update_one(
+                {"_id": user_id},
+                {"$set": {"friends": user["friends"]}}
+            )
+            self.users = [u for u in self.users if u["_id"] != user_id]
+            return True
+        return False
+
+      
