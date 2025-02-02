@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "next-auth": "^4.24.11"
-  },
-  "devDependencies": {
-    "@types/next-auth": "^3.13.0"
-  }
-}

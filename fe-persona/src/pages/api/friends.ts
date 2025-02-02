@@ -24,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const client = await connectToDatabase();
             const database = client.db('PersonaMongoCluster'); // your database name
             const collection = database.collection('users'); // your collection name
-
             const userId = req.query.userId as string;
 
             if (!userId) {
@@ -43,6 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 res.status(404).json({ message: 'User not found' });
             }
         } catch (error) {
+            console.error('Error fetching friends:', error);
             console.error('Error fetching friends:', error);
             res.status(500).json({ message: 'Internal server error', error });
         }
