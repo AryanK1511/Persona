@@ -43,7 +43,14 @@ class Workflow:
             audio_url = self.tts.synthesize_speech(error)
             if DEBUGGING_FLAG:
                 print("5. audio_url: ", audio_url)
-            return {"response": audio_url}
+            return {
+                "response": audio_url,
+                "intent": intent,
+                "friend": friend,
+                "days": days,
+                "data": data,
+                "error": error,
+            }
         response = self.llm.generate_response(prompt, intent, data)
         if DEBUGGING_FLAG:
             print("4. response: ", response)
@@ -51,4 +58,11 @@ class Workflow:
         audio_url = self.tts.synthesize_speech(response)
         if DEBUGGING_FLAG:
             print("5. audio_url: ", audio_url)
-        return {"response": audio_url}
+        return {
+            "response": audio_url,
+            "intent": intent,
+            "friend": friend,
+            "days": days,
+            "data": data,
+            "error": error,
+        }
