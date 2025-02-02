@@ -2,11 +2,12 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppBar, Toolbar, Typography, Button, Container, CssBaseline} from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Container, CssBaseline, Box, Avatar } from "@mui/material";
 import Link from "next/link";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
+import Chat from "./components/Chat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,9 +54,7 @@ const theme = createTheme({
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -71,9 +70,17 @@ export default function RootLayout({
       <SessionProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
-            {/* Navigation Bar */}
-            <AppBar position="static" sx={{ backgroundColor: "#7C4DFF" }}>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            style={{
+              height: '100%',
+              margin: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {/* Navigation Bar (stays fixed) */}
+            <AppBar position="fixed" sx={{ backgroundColor: "#7C4DFF" }}>
               <Toolbar>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                   Persona
@@ -87,15 +94,56 @@ export default function RootLayout({
                 <Button color="inherit" component={Link} href="/calendar">
                   Calendar
                 </Button>
+                <UserAvatar />
               </Toolbar>
             </AppBar>
-            {/* Main Content */}
-            <Container sx={{ padding: "24px", backgroundColor: "background.default", minHeight: '100vh' }}>
+
+            {/* Scrollable Main Content */}
+            <Box
+              sx={{
+                flex: 1,
+                marginTop: "64px", // Make space for the fixed AppBar (adjust if your AppBar height is different)
+                overflowY: "auto",
+                display: 'flex',
+              }}
+            >
               {children}
-            </Container>
+              <Chat />
+            </Box>
+
+            {/* Footer (stays at the bottom of the page content) */}
+            <Box
+              component="footer"
+              sx={{
+                backgroundColor: "#7C4DFF",
+                color: "white",
+                padding: "10px",
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="body2">
+                © {new Date().getFullYear()} Persona. All rights reserved.
+              </Typography>
+            </Box>
           </body>
         </ThemeProvider>
       </SessionProvider>
     </html>
   );
+}
+
+function UserAvatar() {
+  const { data: session } = useSession();
+
+  if (session && session.user && session.user.image) {
+    return (
+      <Avatar
+        src={session.user.image}
+        alt={session.user.name || "User Avatar"}
+        sx={{ marginLeft: 2 }}
+      />
+    );
+  }
+
+  return null;
 }

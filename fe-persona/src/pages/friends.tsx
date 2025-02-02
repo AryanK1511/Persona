@@ -18,14 +18,16 @@ const Friends: React.FC = () => {
         return null;
     }
 
-    if (status === "loading") {
+    if (status === 'loading') {
         return <div>Loading...</div>;
     }
 
-    if (status === "unauthenticated") {
+    if (status === 'unauthenticated') {
         return (
             <Container>
-                <Typography variant="h2">My Friends</Typography>
+                <Typography variant="h2" sx={{ mb: 3 }}>
+                    My Friends
+                </Typography>
                 <Typography>Please log in to see your friends.</Typography>
             </Container>
         );
@@ -36,10 +38,17 @@ const Friends: React.FC = () => {
             <Typography variant="h2" sx={{ mb: 3 }}>
                 My Friends
             </Typography>
-            <MyFriends user={session && session.user ? {
-                ...session.user as ExtendedUser,
-                id: (session.user as ExtendedUser).id || '', name: session.user.name || ''
-            } : null} />
+            <MyFriends
+                user={
+                    session && session.user
+                        ? {
+                            ...(session.user as ExtendedUser),
+                            id: (session.user as ExtendedUser).id || '',
+                            name: session.user.name || '',
+                        } as ExtendedUser
+                        : null
+                }
+            />
         </Container>
     );
 };

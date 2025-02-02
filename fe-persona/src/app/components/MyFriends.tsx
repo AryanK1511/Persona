@@ -1,3 +1,6 @@
+// app/components/MyFriends.tsx (or wherever your MyFriends component lives)
+"use client"; // if using Next.js App Router
+
 import React, { useEffect, useState } from 'react';
 import {
     Container,
@@ -15,9 +18,9 @@ import { Chat, Delete } from '@mui/icons-material';
 import { ExtendedUser } from '../models/user';
 
 interface Friend {
-    id: string;
     name: string;
-    avatar?: string;
+    schedule: string;
+    location: string;
 }
 
 const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
@@ -29,15 +32,17 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
     useEffect(() => {
         if (user) {
             const fetchFriends = async () => {
+                if (!user?.id) return; // Ensure userId is present
+
                 try {
                     const response = await fetch(`/api/friends?userId=${user.id}`);
                     if (!response.ok) {
-                        throw new Error('Failed to fetch friends');
+                        throw new Error("Failed to fetch friends");
                     }
                     const data = await response.json();
                     setFriends(data.friends);
                 } catch (err) {
-                    setError(err instanceof Error ? err.message : 'An error occurred');
+                    setError(err instanceof Error ? err.message : "An error occurred");
                 } finally {
                     setLoading(false);
                 }
@@ -53,14 +58,14 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
         friend.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleMessage = (friendId: string) => {
+    const handleMessage = (friendName: string) => {
         // Implement messaging functionality
-        console.log(`Message friend with ID: ${friendId}`);
+        console.log(`Message friend: ${friendName}`);
     };
 
-    const handleRemove = (friendId: string) => {
+    const handleRemove = (friendName: string) => {
         // Implement friend removal functionality
-        console.log(`Remove friend with ID: ${friendId}`);
+        console.log(`Remove friend: ${friendName}`);
     };
 
     if (!user) {
@@ -92,10 +97,6 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
 
     return (
         <Container>
-            <Typography variant="h2" sx={{ mb: 3 }}>
-                My Friends
-            </Typography>
-
             {/* Search Bar */}
             <TextField
                 label="Search friends"
@@ -109,33 +110,36 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
             {/* Friends List */}
             <List>
                 {filteredFriends.length > 0 ? (
-                    filteredFriends.map((friend) => (
+                    filteredFriends.map((friend, index) => (
                         <ListItem
-                            key={friend.id}
+                            key={index}
                             secondaryAction={
                                 <>
-                                    {/* Friend Actions */}
-                                    <IconButton edge="end" aria-label="message" onClick={() => handleMessage(friend.id)}>
+                                    <IconButton edge="end" aria-label="message" onClick={() => handleMessage(friend.name)}>
                                         <Chat />
                                     </IconButton>
-                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(friend.id)}>
+                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(friend.name)}>
                                         <Delete />
                                     </IconButton>
                                 </>
                             }
                         >
                             <ListItemAvatar>
-                                <Avatar src={friend.avatar} alt={friend.name} />
+                                {/* Use the first letter of the friend's name if no avatar exists */}
+                                <Avatar>{friend.name.charAt(0)}</Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary={friend.name} />
+                            <ListItemText
+                                primary={friend.name}
+                                secondary={`Schedule: ${friend.schedule}, Location: ${friend.location}`}
+                            />
                         </ListItem>
-          ))
-        ) : (
-          <Typography>No friends found.</Typography>
-        )}
-      </List>
-    </Container>
-  );
+                    ))
+                ) : (
+                    <Typography>No friends found.</Typography>
+                )}
+            </List>
+        </Container>
+    );
 };
 
 export default MyFriends;

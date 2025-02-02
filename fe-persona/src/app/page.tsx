@@ -2,10 +2,74 @@
 
 import Image from "next/image";
 import { Container, Typography, Button, Box } from "@mui/material";
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import PersonaCharacter from "./components/PersonaCharacter";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (session) {
+    return (
+      <Container
+        maxWidth="md"
+        sx={{
+          overflowY: "auto",
+          scrollbarWidth: "none",
+          paddingY: "5vh"
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "24px",
+            textAlign: "center",
+          }}
+        >
+          <Typography
+            variant="h1"
+            align="center"
+            gutterBottom
+            sx={{ color: "#333333", fontWeight: 300 }}
+          >
+            Welcome back, {session.user?.name}
+          </Typography>
+          <Typography
+            variant="h5"
+            align="center"
+            paragraph
+            sx={{ color: "#666666", fontWeight: 300 }}
+          >
+            You are now logged in.
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#7C4DFF",
+              color: "white",
+              borderRadius: "20px",
+              padding: "10px 24px",
+              textTransform: "none",
+              fontSize: "1rem",
+              "&:hover": {
+                backgroundColor: "#6E3BFF",
+              },
+            }}
+            onClick={() => signOut()}
+          >
+            Sign out
+          </Button>
+          {/* Add more content for authenticated users */}
+        </Box>
+      </Container>
+    );
+  }
+
   return (
     <Container
       maxWidth="md"
