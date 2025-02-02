@@ -15,8 +15,13 @@ load_dotenv()
 
 MQTT_BROKER = os.getenv("BROKER_HOST", "localhost")
 MQTT_PORT = int(os.getenv("BROKER_PORT", 1883))
+MQTT_BROKER = os.getenv("BROKER_HOST", "localhost")
+MQTT_PORT = int(os.getenv("BROKER_PORT", 1883))
 MQTT_TOPIC = os.getenv("MQTT_TOPIC", "test/topic")
 
+create_log("info", f"MQTT_BROKER: {MQTT_BROKER}")
+
+# ========== FAST API APP ==========
 create_log("info", f"MQTT_BROKER: {MQTT_BROKER}")
 
 # ========== FAST API APP ==========
@@ -89,5 +94,6 @@ async def startup_event():
 
 @app.get("/")
 async def root():
+    create_log("info", "Root endpoint called")
     create_log("info", "Root endpoint called")
     return {"message": "FastAPI running with MQTT!"}
