@@ -1,3 +1,3 @@
-class LLM:
+class STT:
     def __init__(self):
         pass
