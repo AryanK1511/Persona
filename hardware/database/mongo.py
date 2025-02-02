@@ -99,3 +99,32 @@ class Mongo:
             if friend_name.lower() in friend["name"].lower():
                 return friend["schedule"]
         return False
+    
+  
+    # add user
+    def addUser(self, user_id, name):
+        """
+        Adds a new user to the database.
+        Args:
+          user_id (str): The ID of the user to add.
+          name (str): The name of the user to add.
+        """
+        user = {
+            "_id": user_id,
+            "name": name,
+            "friends": [
+                {
+                    "name": "Bob",
+                    "schedule": False,
+                    "location": True
+                },
+                {
+                    "name": "Charlie",
+                    "schedule": True,
+                    "location": False
+                }
+            ]
+        }
+        self.users_collection.insert_one(user)
+        self.users.append(user)
+        return user
