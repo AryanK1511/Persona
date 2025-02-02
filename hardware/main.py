@@ -134,14 +134,6 @@ async def log_message(request: Request):
     response = wf.run(curr_user_id, message)
     print(response)
 
-    audio_url = response["response"]
-    audio_response = requests.get(audio_url)
-    audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
-
-    if response.intent == "schedule":
-        if response.data is None:
-            mqtt_client.publish_message(os.getenv("MY_TOPIC"), "access_calendar:false")
-
     if response.intent == "give_schedule_permission":
         mqtt_client.publish_message(os.getenv("MY_TOPIC"), "calendar_permission")
         # Give actual permission here
@@ -167,7 +159,16 @@ async def log_message(request: Request):
         audio_response = requests.get(audio_url)
         audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
         play(audio)
+    else:
+        audio_url = response["response"]
+        audio_response = requests.get(audio_url)
+        audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
+        play(audio)
 
-    play(audio)
+        if response.get("intent", "general") == "schedule":
+            if response.data is None:
+                mqtt_client.publish_message(
+                    os.getenv("MY_TOPIC"), "access_calendar:false"
+                )
 
     return {"status": "success"}
