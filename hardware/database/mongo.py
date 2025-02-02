@@ -114,11 +114,6 @@ class Mongo:
             "name": name,
             "friends": [
                 {
-                    "name": "Aryan",
-                    "schedule": True,
-                    "location": True
-                },
-                {
                     "name": "Bob",
                     "schedule": False,
                     "location": True
