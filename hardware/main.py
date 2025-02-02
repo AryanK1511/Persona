@@ -60,7 +60,7 @@ class CustomMQTTClient(MQTTClient):
             elif os.getenv("IS_TRANSMITTER") == "true":
                 wf = Workflow()
                 audio_url = wf.tts.synthesize_speech(
-                    "Aryan has been added to your friend list"
+                    "John has been added to your friend list"
                 )
                 audio_response = requests.get(audio_url)
                 audio = AudioSegment.from_file(
@@ -75,7 +75,7 @@ class CustomMQTTClient(MQTTClient):
                 if message_received.split(":")[1] == "false":
                     wf = Workflow()
                     audio_url = wf.tts.synthesize_speech(
-                        "Aryan is trying to access your calendar! Would you like to grant him permission?"
+                        "John is trying to access your calendar! Would you like to grant them permission?"
                     )
                     audio_response = requests.get(audio_url)
                     audio = AudioSegment.from_file(
@@ -88,11 +88,11 @@ class CustomMQTTClient(MQTTClient):
                 audio_url = None
                 if os.getenv("MY_TOPIC") == "pi/2":
                     audio_url = wf.tts.synthesize_speech(
-                        "John has granted you permission to access her calendar!"
+                        "John has granted you permission to access their calendar!"
                     )
                 elif os.getenv("MY_TOPIC") == "pi/1":
                     audio_url = wf.tts.synthesize_speech(
-                        "Jessica has granted you permission to access his calendar!"
+                        "Jessica has granted you permission to access their calendar!"
                     )
 
                 audio_response = requests.get(audio_url)
@@ -134,27 +134,13 @@ async def log_message(request: Request):
     response = wf.run(curr_user_id, message)
     print(response)
 
-    audio_url = response["response"]
-    audio_response = requests.get(audio_url)
-    audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
-
-    if response.intent == "schedule":
-        if response.data is None:
-            mqtt_client.publish_message(os.getenv("MY_TOPIC"), "access_calendar:false")
-
-    if response.intent == "give_schedule_permission":
+    if response.get("intent", "general") == "give_schedule_permission":
         mqtt_client.publish_message(os.getenv("MY_TOPIC"), "calendar_permission")
         # Give actual permission here
         mongo_client = Mongo()
-        user_id = None
-        name = None
-        if os.getenv("MY_TOPIC") == "pi/1":
-            user_id = "123"
-            name = "John"
-        elif os.getenv("MY_TOPIC") == "pi/2":
-            user_id = "456"
-            name = "Jessica"
-        mongo_client.addScheduleAccess(user_id, name)
+        mongo_client.addScheduleAccess("123", "Jessica")
+        mongo_client.addScheduleAccess("456", "John")
+
         wf = Workflow()
         other_person_name = None
         if os.getenv("MY_TOPIC") == "pi/1":
@@ -168,6 +154,16 @@ async def log_message(request: Request):
         audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
         play(audio)
 
-    play(audio)
+    else:
+        audio_url = response["response"]
+        audio_response = requests.get(audio_url)
+        audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
+        play(audio)
+
+        if response.get("intent", "general") == "schedule":
+            if response.get("data", None) is None:
+                mqtt_client.publish_message(
+                    os.getenv("MY_TOPIC"), "access_calendar:false"
+                )
 
     return {"status": "success"}
