@@ -15,7 +15,7 @@ const Friends: React.FC = () => {
     }, []);
 
     if (!isClient) {
-        return null;
+        return null; // Ensure no rendering on the server
     }
 
     if (status === 'loading') {

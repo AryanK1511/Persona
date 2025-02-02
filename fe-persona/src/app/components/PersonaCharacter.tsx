@@ -1,4 +1,4 @@
-import { Box, Typography, Avatar, Stack, Chip } from "@mui/material";
+import { Box, Typography, Avatar, Stack, Chip, Paper, Divider } from "@mui/material";
 
 // Mock JSON data for the Persona profile (replace with actual data from your backend)
 const personaData = {
@@ -19,89 +19,94 @@ const personaData = {
     },
 };
 
-export default function PersonaCharacter() {
+interface PersonaCharacterProps {
+    persona: {
+        name: string;
+        image: string;
+        bio: string;
+        traits?: string[];
+        stats?: Record<string, number | string>;
+        character?: Record<string, any>;
+    };
+}
+
+export default function PersonaCharacter({ persona }: PersonaCharacterProps) {
     return (
-        <Box
+        <Paper
+            elevation={3}
             sx={{
                 width: "100%",
                 maxWidth: "600px",
                 backgroundColor: "#FFFFFF",
                 borderRadius: "16px",
                 padding: "24px",
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
                 textAlign: "left",
             }}
         >
+            {/* Persona Avatar and Name */}
             <Stack direction="row" spacing={3} alignItems="center">
-                {/* Persona Avatar */}
                 <Avatar
-                    src={personaData.image}
-                    alt={personaData.name}
+                    src={persona.image}
+                    alt={persona.name}
                     sx={{
                         width: 100,
                         height: 100,
+                        border: "4px solid #7C4DFF", // Add a border to the avatar
                     }}
                 />
-
-                {/* Persona Details */}
                 <Box>
                     <Typography variant="h4" sx={{ color: "#333333", fontWeight: 500 }}>
-                        {personaData.name}
+                        {persona.name}
                     </Typography>
                     <Typography variant="body1" sx={{ color: "#666666", mt: 1 }}>
-                        {personaData.bio}
+                        {persona.bio}
                     </Typography>
                 </Box>
             </Stack>
 
-            {/* Persona Traits */}
-            <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" sx={{ color: "#333333", fontWeight: 500 }}>
-                    Traits
-                </Typography>
-                <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                    {personaData.traits.map((trait, index) => (
-                        <Chip
-                            key={index}
-                            label={trait}
-                            sx={{
-                                backgroundColor: "#80DEEA",
-                                color: "white",
-                                borderRadius: "12px",
-                            }}
-                        />
-                    ))}
-                </Stack>
-            </Box>
+            <Divider sx={{ my: 3 }} /> {/* Divider between sections */}
 
-            {/* Persona Stats */}
-            <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" sx={{ color: "#333333", fontWeight: 500 }}>
-                    Stats
-                </Typography>
-                <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
-                    {Object.entries(personaData.stats).map(([key, value]) => (
-                        <Typography key={key} variant="body1" sx={{ color: "#666666" }}>
-                            {key}: {value}
-                        </Typography>
-                    ))}
-                </Stack>
-            </Box>
+            {/* Persona Traits */}
+            {persona.traits && persona.traits.length > 0 && (
+                <Box sx={{ mt: 3, textAlign: "center" }}> {/* Center the content */}
+                    <Typography variant="h6" sx={{ color: "#333333", fontWeight: 500 }}>
+                        Traits
+                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap", justifyContent: "center" }}> {/* Center the chips */}
+                        {persona.traits.map((trait, index) => (
+                            <Chip
+                                key={index}
+                                label={trait}
+                                sx={{
+                                    backgroundColor: "#80DEEA",
+                                    color: "white",
+                                    borderRadius: "12px",
+                                    margin: "4px", // Add margin for better spacing
+                                }}
+                            />
+                        ))}
+                    </Stack>
+                </Box>
+            )}
+
+            <Divider sx={{ my: 3 }} /> {/* Divider between sections */}
 
             {/* Persona Character Fields */}
-            <Box sx={{ mt: 3 }}>
-                <Typography variant="h6" sx={{ color: "#333333", fontWeight: 500 }}>
-                    Character
-                </Typography>
-                {Object.entries(personaData.character).map(([key, value]) => (
-                    <Box key={key} sx={{ mt: 1 }}>
-                        <Typography variant="body1" sx={{ color: "#666666" }}>
-                            <strong>{key}:</strong>{" "}
-                            {Array.isArray(value) ? value.join(", ") : value}
-                        </Typography>
-                    </Box>
-                ))}
-            </Box>
-        </Box>
+            {persona.character && Object.keys(persona.character).length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                    <Typography variant="h6" sx={{ color: "#333333", fontWeight: 500 }}>
+                        Character
+                    </Typography>
+                    {Object.entries(persona.character).map(([key, value]) => (
+                        <Box key={key} sx={{ mt: 2 }}>
+                            <Typography variant="body1" sx={{ color: "#666666" }}>
+                                <strong>{key}:</strong>{" "}
+                                {Array.isArray(value) ? value.join(", ") : value}
+                            </Typography>
+                        </Box>
+                    ))}
+                </Box>
+            )}
+        </Paper>
     );
 }

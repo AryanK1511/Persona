@@ -153,6 +153,7 @@ async def log_message(request: Request):
         audio_response = requests.get(audio_url)
         audio = AudioSegment.from_file(io.BytesIO(audio_response.content), format="mp3")
         play(audio)
+
     else:
         audio_url = response["response"]
         audio_response = requests.get(audio_url)
