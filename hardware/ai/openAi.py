@@ -36,7 +36,7 @@ class ChatGPTInteraction:
                     "role": "system",
                     "content": "You are a straightforward assistant used to get intent out of user's transcribed input. You have the following options, " 
                     + intents_str
-                    + '. Send a json back with this format {"intent": "your_intent", "name": "your_name"}. Add your name if its location or distance or schedule intent.',
+                    + '. Send a json back with this format {"intent": "your_intent", "name": "your_name", schdeule_days_ahead: "only if the intent is schdeule, today is 0, tomorrow is 1 and so on"}. Add your name if its location or distance or schedule intent.',
                 }
             ]
             messages.extend(self.conversation_history)
@@ -51,24 +51,22 @@ class ChatGPTInteraction:
             )
             self.clean()
             assistant_response = json.loads(assistant_response)
-            return [assistant_response["intent"], assistant_response.get("name", "")]
+            print(assistant_response)
+            return [assistant_response["intent"], assistant_response.get("name", ""), assistant_response["schdeule_days_ahead"]]
         except Exception as e:
             self.clean()
             print("ERROR in openai.py while parisng the intent", e)
 
 
 
-    async def generate_response(self,user_prompt: str) -> str:
+    def generate_response(self,user_prompt: str, system_message: str) -> str:
         try:
             self.conversation_history.append({"role": "user", "content": user_prompt})
             messages = [
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant analyzing data about the speed of different OS's.",
-                },
-                {
-                    "role": "user",
-                    "content": f"Here is the data to analyze in CSV format:",
+                    "content": "You are a helpful assistant whose reponse will be converted into speech, keep and short and concise. You may be asked a question or given info to paraphrase. Only return the text to be converted into speech. You may get other langauage input from the user, always answer in English."
+                    + system_message,
                 },
             ]
             messages.extend(self.conversation_history)

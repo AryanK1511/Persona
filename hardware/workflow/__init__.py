@@ -25,19 +25,23 @@ class Workflow:
         if DEBUGGING_FLAG:
             print("1. workflow started with user_id: ", user_id, " and prompt: ", prompt)
 
-        [intent, friend] = self.intent.get_intent(prompt)
+        [intent, friend, days] = self.intent.get_intent(prompt)
         if DEBUGGING_FLAG:
-            print("2. intent: ", intent)
+            print("2. intent: ", intent, " friend: ", friend, " days: ", days)
 
-        [data, error] = self.permission.get_data(user_id, intent, friend)
-        if DEBUGGING_FLAG:
-            print("3. data: ", data)
+        data, error = None, None
+        if intent != "general":
+            [data, error] = self.permission.get_data(user_id, intent, friend, days)
+            if DEBUGGING_FLAG:
+                print("3. data: ", data, " error: ", error)
 
         if error:
-            return {"error": error}
+            audio_url = self.tts.synthesize_speech(error)
+            if DEBUGGING_FLAG:
+                print("5. audio_url: ", audio_url)
+            return {"response": audio_url}
         
-        system_message = "orange"
-        response = self.llm.generate_response(prompt, intent, system_message)
+        response = self.llm.generate_response(prompt, intent, data)
         if DEBUGGING_FLAG:
             print("4. response: ", response)
 
@@ -48,4 +52,4 @@ class Workflow:
 
 
 test = Workflow()
-test.run("123", "What is the weather today?")
+test.run("123", "What does Bob schdeule look like tomorrow?")
