@@ -37,7 +37,7 @@ export default NextAuth({
         async signIn({ user }) {
             try {
                 const client = await connectToDatabase();
-                const database = client.db("PersonaMongoCluster");
+                const database = client.db("hh"); // updated database name
                 const collection = database.collection("users");
 
                 console.log(`[INFO] Signing in user: ${user.email}`);
