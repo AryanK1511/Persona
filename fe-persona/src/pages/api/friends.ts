@@ -11,6 +11,7 @@ async function connectToDatabase() {
         return cachedClient;
     }
     const client = new MongoClient(uri, {
+        // ...existing code...
     });
     await client.connect();
     cachedClient = client;

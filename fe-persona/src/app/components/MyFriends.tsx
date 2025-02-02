@@ -80,7 +80,6 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
     if (loading) {
         return (
             <Container>
-                <Typography variant="h2">My Friends</Typography>
                 <CircularProgress />
             </Container>
         );

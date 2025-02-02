@@ -1,59 +1,81 @@
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, TextField, IconButton } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 
 export default function Chat() {
     return (
         <Box
             sx={{
-                width: "300px",
-                backgroundColor: "#F5F5F5",
-                borderLeft: "1px solid #E0E0E0",
+                width: "100%", // Full width
+                backgroundColor: "#FFFFFF",
+                boxShadow: "-2px 0px 10px rgba(0, 0, 0, 0.1)", // Subtle shadow
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                height: "100%", // Takes full available height inside the layout
+                overflow: "hidden", // No unwanted scrollbars
+                borderTopRightRadius: 0, // Remove border from top right
             }}
         >
-            <Box sx={{ padding: "16px", flex: 1 }}>
-                <Typography variant="h6" gutterBottom>
-                    Chat with Persona
-                </Typography>
+            {/* 🔹 Header */}
+            <Box
+                sx={{
+                    padding: "16px",
+                    backgroundColor: "#7C4DFF",
+                    color: "white",
+                    fontWeight: 600,
+                }}
+            >
+                <Typography variant="h6">Chat with Persona</Typography>
+            </Box>
+
+            {/* 🔹 Chat Messages (Scrollable) */}
+            <Box
+                sx={{
+                    flex: 1, // Takes remaining space
+                    padding: "16px",
+                    overflowY: "auto",
+                    backgroundColor: "#F9FAFB",
+                }}
+            >
                 <Typography variant="body2" color="textSecondary">
                     This is a placeholder for the chat component.
                 </Typography>
             </Box>
+
+            {/* 🔹 Input Field & Send Button */}
             <Box
                 sx={{
-                    padding: "8px",
-                    borderTop: "1px solid #E0E0E0",
                     display: "flex",
                     alignItems: "center",
+                    padding: "12px",
+                    backgroundColor: "#FFFFFF",
+                    borderTop: "1px solid #E0E0E0",
                 }}
             >
-                <input
-                    type="text"
+                <TextField
                     placeholder="Type a message..."
-                    style={{
-                        flex: 1,
-                        padding: "8px",
-                        border: "none",
-                        outline: "none",
-                        borderRadius: "4px",
-                        marginRight: "8px",
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        backgroundColor: "#F9FAFB",
+                        borderRadius: "8px",
+                        "& .MuiOutlinedInput-root": {
+                            "& fieldset": { borderColor: "#E0E0E0" },
+                            "&:hover fieldset": { borderColor: "#B39DDB" },
+                            "&.Mui-focused fieldset": { borderColor: "#7C4DFF" },
+                        },
                     }}
                 />
-                <Button
-                    variant="contained"
+                <IconButton
                     sx={{
                         backgroundColor: "#7C4DFF",
                         color: "white",
-                        textTransform: "none",
-                        "&:hover": {
-                            backgroundColor: "#6E3BFF",
-                        },
+                        marginLeft: "8px",
+                        "&:hover": { backgroundColor: "#6E3BFF" },
                     }}
                 >
-                    Send
-                </Button>
+                    <SendIcon />
+                </IconButton>
             </Box>
         </Box>
     );
