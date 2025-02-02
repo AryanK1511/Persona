@@ -7,8 +7,8 @@
 #define SS_PIN 5
 
 
-const char *ssid = "Ademsphone";
-const char *password = "Adem0905";
+const char *ssid = "Zlatin";
+const char *password = "ratatata";
 const char *mqtt_server = "6.tcp.ngrok.io";
 
 WiFiClient espClient;
