@@ -2,7 +2,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppBar, Toolbar, Typography, Button, Container, CssBaseline } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Container, CssBaseline} from "@mui/material";
 import Link from "next/link";
 import { SessionProvider } from "next-auth/react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -71,7 +71,7 @@ export default function RootLayout({
       <SessionProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100%', margin: 0 }}>
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ height: '100%', margin: 0, display: 'flex', flexDirection: 'column' }}>
             {/* Navigation Bar */}
             <AppBar position="static" sx={{ backgroundColor: "#7C4DFF" }}>
               <Toolbar>
