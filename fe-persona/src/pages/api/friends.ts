@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const database = client.db('hh'); // updated database name
             const collection = database.collection('users'); // your collection name
             const userId = req.query.userId as string;
+            const realUserId = 123;
 
             if (!userId) {
                 return res.status(400).json({ message: "User ID is required" });
@@ -35,12 +36,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
             // Query using _id (since your document stores _id as "123")
             const user = await collection.findOne({ _id: new ObjectId(userId) });
+            const realUser = await collection.findOne({ name: "John" });
 
             if (user) {
-                res.status(200).json({ friends: user.friends || [] });
+                res.status(200).json({ realUser: realUser || [] });
             } else {
                 res.status(404).json({ message: 'User not found' });
             }
+
         } catch (error) {
             console.error('Error fetching friends:', error);
             res.status(500).json({ message: 'Internal server error', error });

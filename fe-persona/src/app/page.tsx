@@ -71,7 +71,7 @@ export default function Home() {
             gutterBottom
             sx={{ color: "#333333", fontWeight: 300 }}
           >
-            Welcome back, {session.user?.name}
+            Welcome back, John
           </Typography>
           {/* Display the user's persona */}
           {persona && <PersonaCharacter persona={persona} />}
