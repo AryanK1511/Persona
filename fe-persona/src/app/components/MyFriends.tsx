@@ -15,21 +15,57 @@ import {
     IconButton,
 } from '@mui/material';
 import { Chat, Delete } from '@mui/icons-material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { ExtendedUser } from '../models/user';
+import mqtt from 'mqtt';
 
 interface Friend {
+    id: string;
     name: string;
-    schedule: string;
-    location: string;
+    friends: [{
+        schedule: string;
+        name: string;
+        location: string;
+    }]
 }
 
 const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
-    const [friends, setFriends] = useState<Friend[]>([]);
+    const [friends, setFriends] = useState<Friend | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
 
     useEffect(() => {
+
+        const client = mqtt.connect('ws://localhost:9001');
+
+        client.on('connect', () => {
+            if (client.connected) {
+                client.subscribe('fe/topic', (err) => {
+                    if (err) {
+                        console.error('Subscription error:', err);
+                    }
+                });
+            }
+        });
+
+        client.on('message', (topic, message) => {
+            if (topic === 'fe/topic' && message.toString() === 'refresh') {
+                window.location.reload();
+            }
+        });
+
+        client.on('reconnect', () => {
+            console.log('Reconnecting...');
+        });
+
+        client.on('offline', () => {
+            console.log('Client went offline');
+        });
+
+
+
         if (user) {
             const fetchFriends = async () => {
                 if (!user?.id) return; // Ensure userId is present
@@ -40,7 +76,8 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
                         throw new Error("Failed to fetch friends");
                     }
                     const data = await response.json();
-                    setFriends(data.friends);
+                    console.log(data)
+                    setFriends(data.realUser);
                 } catch (err) {
                     setError(err instanceof Error ? err.message : "An error occurred");
                 } finally {
@@ -52,11 +89,11 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
         } else {
             setLoading(false);
         }
-    }, [user]);
 
-    const filteredFriends = friends.filter((friend) =>
-        friend.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+        return () => {
+            client.end();
+        };
+    }, [user]);
 
     const handleMessage = (friendName: string) => {
         // Implement messaging functionality
@@ -105,37 +142,39 @@ const MyFriends: React.FC<{ user: ExtendedUser | null }> = ({ user }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
-
-            {/* Friends List */}
             <List>
-                {filteredFriends.length > 0 ? (
-                    filteredFriends.map((friend, index) => (
-                        <ListItem
-                            key={index}
-                            secondaryAction={
-                                <>
-                                    <IconButton edge="end" aria-label="message" onClick={() => handleMessage(friend.name)}>
-                                        <Chat />
-                                    </IconButton>
-                                    <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(friend.name)}>
-                                        <Delete />
-                                    </IconButton>
-                                </>
+                {friends?.friends.map((friend2, index) => (
+                    <ListItem
+                        key={index}
+                        secondaryAction={
+                            <>
+                                <IconButton edge="end" aria-label="message" onClick={() => handleMessage(friend2.name)}>
+                                    <Chat color="primary" />
+                                </IconButton>
+                                <IconButton edge="end" aria-label="delete" onClick={() => handleRemove(friend2.name)}>
+                                    <Delete color="error" />
+                                </IconButton>
+                            </>
+                        }
+                        sx={{ justifyContent: 'center' }}
+                    >
+                        <ListItemAvatar>
+                            <Avatar sx={{ bgcolor: 'primary.main' }}>{friend2.name.charAt(0)}</Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={
+                                <Typography variant="h6" color="textPrimary" align="center">
+                                    {friend2.name}
+                                </Typography>
                             }
-                        >
-                            <ListItemAvatar>
-                                {/* Use the first letter of the friend's name if no avatar exists */}
-                                <Avatar>{friend.name.charAt(0)}</Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={friend.name}
-                                secondary={`Schedule: ${friend.schedule}, Location: ${friend.location}`}
-                            />
-                        </ListItem>
-                    ))
-                ) : (
-                    <Typography>No friends found.</Typography>
-                )}
+                            secondary={
+                                <Typography variant="body2" color="textSecondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    Schedule: {friend2.schedule ? <CheckIcon style={{ color: 'green', verticalAlign: 'middle' }} /> : <CloseIcon style={{ color: 'red', verticalAlign: 'middle' }} />} | Location: {friend2.location ? <CheckIcon style={{ color: 'green', verticalAlign: 'middle' }} /> : <CloseIcon style={{ color: 'red', verticalAlign: 'middle' }} />}
+                                </Typography>
+                            }
+                        />
+                    </ListItem>
+                ))}
             </List>
         </Container>
     );
