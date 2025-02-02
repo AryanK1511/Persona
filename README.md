@@ -1,18 +1,25 @@
 # Persona
 
-ENVs we need for this to work:
-MONGO_URI - for mongo db connection
-IS_TRANSMITTER - for the server to determine if it has a rfid transmitter
-OPENAI_API_KEY - self explainatory
-DEBUGGING - lots of logs if this flag is on
+<p align="center">
+  <a href="https://devpost.com/project/persona">
+    <img src="https://img.shields.io/badge/Devpost-Project-blue?logo=devpost" alt="Devpost" />
+  </a>
+  <a href="https://youtube.com/project-persona">
+    <img src="https://img.shields.io/badge/YouTube-Demo-red?logo=youtube" alt="YouTube" />
+  </a>
+</p>
 
-## Resources
+<p align="center">
+  <img src="./assets/logo.png" alt="Persona Logo" width="450" />
+</p>
 
-- [Python Speech to Text Library on GitHub](https://github.com/Uberi/speech_recognition)
-- [MQTT Website](https://mqtt.org)
-- [Assembly AI](https://www.assemblyai.com/)
-<<<<<<< HEAD
-- [Real-Time Speech Recognition In Python in 60 seconds!](https://www.youtube.com/watch?v=N8zKpnw5fRk)
-=======
-- [Real-Time Speech Recognition In Python in 60 seconds!](https://www.youtube.com/watch?v=N8zKpnw5fRk)
->>>>>>> 194597baea80a2118a376135cd8913217a248ab8
+<p align="center">
+  A Raspberry Pi–powered AI companion that connects friends with a tap and knows everything about you 🤖⭐️!
+</p>
+
+## Authors
+
+- [Aryan Khurana](https://github.com/AryanK1511)
+- [Krinskumar Vaghasia](https://github.com/KrinsKumar)
+- [Adem](https://github.com/Hares-2088)
+- [Zlatan](https://github.com/zlatin-tech)
