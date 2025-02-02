@@ -7,9 +7,9 @@
 #define SS_PIN 5
 
 
-const char *ssid = "Zlatin's iPhone";
-const char *password = "ratatata";
-const char *mqtt_server = "172.20.10.4";
+const char *ssid = "Ademsphone";
+const char *password = "Adem0905";
+const char *mqtt_server = "6.tcp.ngrok.io";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -18,7 +18,7 @@ MFRC522 rfid(SS_PIN, RST_PIN);
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, 18712);
 
   SPI.begin();
   rfid.PCD_Init();
