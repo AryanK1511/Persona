@@ -24,6 +24,17 @@ class Permission:
         if not self.is_friends(user_id, friend):
             error_message = "You are not friends with " + friend
             return [None, error_message]
+        permission = self.get_permission(user_id, intent, friend)
+        print("permission: ", permission)
+        
+        if not permission:
+            error_code = ""
+            if intent == "current_location" or intent == "distance":
+                error_code = "location"
+            elif intent == "schedule":
+                error_code = "schedule"
+            error_message = "You do not have permission to access " + friend + "'s " + error_code
+            return [None, error_message]
         
         if intent == "give_address_permission":
             self.mongo.addLocationAccess(user_id, friend)
@@ -51,6 +62,7 @@ class Permission:
         elif intent == "current_location" or intent == "distance":
             return self.mongo.isLocationAccess(user_id, friend)
         elif intent == "schedule":
+            print("checking schedule access")
             return self.mongo.isScheduleAccess(user_id, friend)
 
     def is_friends(self, user_id, friend):
