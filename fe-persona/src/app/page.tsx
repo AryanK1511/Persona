@@ -4,9 +4,43 @@ import Image from "next/image";
 import { Container, Typography, Button, Box } from "@mui/material";
 import { signIn, signOut, useSession } from "next-auth/react";
 import PersonaCharacter from "./components/PersonaCharacter";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const [persona, setPersona] = useState(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (session) {
+      const fetchPersona = async () => {
+        try {
+          console.log("Fetching persona for user:", session.user.id);
+
+          const response = await fetch(`/api/persona?userId=${session.user.id}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch persona: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log("Persona data received:", data);
+          setPersona(data);
+        } catch (error) {
+          console.error("Error fetching persona:", error);
+        }
+      };
+
+      fetchPersona();
+    }
+  }, [session]);
+
+  if (!isClient) {
+    return null;
+  }
 
   if (status === "loading") {
     return <div>Loading...</div>;
@@ -39,32 +73,8 @@ export default function Home() {
           >
             Welcome back, {session.user?.name}
           </Typography>
-          <Typography
-            variant="h5"
-            align="center"
-            paragraph
-            sx={{ color: "#666666", fontWeight: 300 }}
-          >
-            You are now logged in.
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#7C4DFF",
-              color: "white",
-              borderRadius: "20px",
-              padding: "10px 24px",
-              textTransform: "none",
-              fontSize: "1rem",
-              "&:hover": {
-                backgroundColor: "#6E3BFF",
-              },
-            }}
-            onClick={() => signOut()}
-          >
-            Sign out
-          </Button>
-          {/* Add more content for authenticated users */}
+          {/* Display the user's persona */}
+          {persona && <PersonaCharacter persona={persona} />}
         </Box>
       </Container>
     );
@@ -144,9 +154,6 @@ export default function Home() {
             Sign in with Google
           </Button>
         </Box>
-
-        {/* Persona Profile Display */}
-        <PersonaCharacter />
       </Box>
     </Container>
   );

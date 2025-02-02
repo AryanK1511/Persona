@@ -11,6 +11,7 @@ async function connectToDatabase() {
         return cachedClient;
     }
     const client = new MongoClient(uri, {
+        // ...existing code...
     });
     await client.connect();
     cachedClient = client;
@@ -21,9 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'GET') {
         try {
             const client = await connectToDatabase();
-            const database = client.db('PersonaMongoCluster'); // your database name
+            const database = client.db('hh'); // updated database name
             const collection = database.collection('users'); // your collection name
-
             const userId = req.query.userId as string;
 
             if (!userId) {
